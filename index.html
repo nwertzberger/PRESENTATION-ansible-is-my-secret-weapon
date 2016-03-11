@@ -35,12 +35,12 @@
     <!-- Begin slides. Just make elements with a class of slide. -->
 
     <section class="slide">
-        <h2>Ansible is my Secret Weapon</h2>
-        <p>Nick Wertzberger</p>
+        <h1>Ansible is my Secret Weapon</h1>
     </section>
     <section class="slide">
         <h2>About Me</h2>
         <ul>
+            <li>Nick Wertzberger</li>
             <li>Codes large-scale infrastructure apps</li>
             <li>Manages 1000's of servers</li>
             <li>Manages > 10,000 individual application instances</li>
@@ -49,26 +49,18 @@
         </ul>
     </section>
     <section class="slide">
-        <h2>What Matters For Managing a lot of applications?</h2>
+        <h2>What matters when managing a lot of applications?</h2>
         <ul>
-            <li class="slide">A Source of Truth</li>
-            <li class="slide">Automated Deployment Orchestration</li>
-            <li class="slide">Controlled Variability</li>
-            <li class="slide">Dependable Recovery</li>
-        </ul>
-    </section>
-    <section class="slide">
-        <h2>Goals for managing configuration</h2>
-        <ul>
-            <li class="slide">Idempotent / Repeatable</li>
-            <li class="slide">Scalable</li>
-            <li class="slide">Verifiable</li>
-            <li class="slide">Easy to change</li>
+            <li class="slide">Verifiable configurations</li>
+            <li class="slide">Automated deployment orchestration</li>
+            <li class="slide">Controlled variability</li>
+            <li class="slide">Dependable recovery</li>
         </ul>
     </section>
     <section class="slide">
         <h2>Ansible</h2>
         <ul>
+            <li class="slide">Framework for configuration management</li>
             <li class="slide">Works over SSH</li>
             <li class="slide">Doesn't have to run as root</li>
             <li class="slide">Open source</li>
@@ -76,11 +68,12 @@
         </ul>
     </section>
     <section class="slide">
-        <h2>Ansible</h2>
+        <h2>Ansible (in other words)</h2>
         <ul>
-            <li class="slide">Works over tools i already have.</li>
-            <li class="slide">Don't need to ask anyone for root.</li>
-            <li class="slide">Don't need to ask anyone for money.</li>
+            <li class="slide">It's better than whatever I'm doing</li>
+            <li class="slide">It works over tools i already have.</li>
+            <li class="slide">I Don't need to ask anyone for root.</li>
+            <li class="slide">I Don't need to ask anyone for money.</li>
             <li class="slide">I <i>like</i> Python!</li>
         </ul>
     </section>
@@ -93,6 +86,12 @@
     </section>
     <section class="slide">
         <h1>Done!</h1>
+    </section>
+    <section class="slide">
+        <h2>An Ansible Inventory</h2>
+        <pre><code>
+vim inventory.ini
+        </code></pre>
     </section>
     <section class="slide">
         <h2>An Ansible Inventory</h2>
@@ -112,11 +111,18 @@ ansible.ideaheap.com
     </section>
     <section class="slide">
         <h2>An Ansible Playbook</h2>
+        <pre><code>
+vim playbook.yml
+        </code></pre>
+    </section>
+    <section class="slide">
+        <h2>An Ansible Playbook</h2>
         <pre> <code>
 ---
 - hosts: all
   gather_facts: False
   connection: ssh
+  remote_user: root
   vars:
     bootstrap: false
   tasks:
@@ -131,7 +137,7 @@ ansible.ideaheap.com
     <section class="slide">
         <h2>Running a playbook</h2>
         <code>
-            ansible-playbook -i inventory bootstrap.yml -e bootstrap=true
+            ansible-playbook -i inventory.ini playbook.yml -e bootstrap=true
         </code>
     </section>
     <section class="slide">
@@ -228,6 +234,9 @@ total 8
 -rw-r--r--  1 n s 864 Jan  9 09:10 fastcgi.conf
         </code></pre>
     </section>
+    <section class="slide">
+        <h1>What goes in the inventory?</h1>
+    </section>
 
     <section class="slide">
         <h2>Variables</h2>
@@ -323,7 +332,29 @@ mysql_databases:
   - "{{ ideaheap_com.mysql }}"
         </code></pre>
     </section>
-    
+    <section class="slide">
+        <h1>I don't like the default organization!</h1>
+    </section>
+    <section class="slide">
+        <h2>ansible.cfg</h2>
+        <pre><code>
+[defaults]
+private_key_file=~/.ssh/id_rsa
+remote_user=root
+roles_path=./roles/
+
+[ssh_connection]
+ssh_args=-o StrictHostKeyChecking=no
+        </code></pre>
+    </section>
+    <section class="slide">
+        <h2>Pro Tips</h2>
+        <ul>
+            <li class="slide">Put your ansible call into a bash script</li>
+            <li class="slide">Separate different playbook types</li>
+            <li class="slide">Utilize includes</li>
+        </ul>
+    </section>
     <section class="slide">
         <h2>And so much more!</h2>
         <ul>
