@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=1024, user-scalable=no">
 
-  <title>Your deck.js Presentation</title>
+  <title>Ansible is my secret weapon</title>
 
   <!-- Required stylesheet -->
   <link rel="stylesheet" media="screen" href="core/deck.core.css">
@@ -153,9 +153,194 @@ ansible.ideaheap.com
     <section class="slide">
         <h2>Roles</h2>
         <ul>
-            <li class="slide">Modular layout</li>
-            <li class="slide"></li>
-            <li class="slide">A modular</li>
+            <li class="slide">tasks</li>
+            <li class="slide">files</li>
+            <li class="slide">templates</li>
+            <li class="slide">handlers</li>
+            <li class="slide">defaults</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Example: tasks</h2>
+        <pre><code>
+---
+- name: install nginx
+  apt: name=nginx-full
+
+- name: install fcgi conf file
+  copy: src=fastcgi.conf dest=/etc/nginx/fastcgi_params
+  notify:
+    - restart nginx
+
+- name: configure php sites
+  template: src=site.php.j2 dest=/etc/nginx/sites-available/{{ item.name }}
+  with_items: "{{ nginx_php_sites }}"
+  notify:
+    - restart nginx
+    - restart php5-fpm
+
+# Some stuff omitted
+        </code></pre>
+    </section>
+
+    <section class="slide">
+        <h2>Example: handlers</h2>
+        <pre><code>
+---
+- name: restart php5-fpm
+  service: name=php5-fpm state=restarted
+- name: restart nginx
+  service: name=nginx state=restarted
+        </code></pre>
+    </section>
+
+    <section class="slide">
+        <h2>Example: templates</h2>
+        <pre><code>
+server {
+    listen  80; ## listen for ipv4; this line is default and implied
+    listen  [::]:80 ipv6only=on;
+
+    access_log   {{ item.logdir }}/access.log;
+    error_log    {{ item.logdir }}/error.log;
+
+    keepalive_timeout 70;
+
+    server_name {{ item.server_name }};
+    root {{ item.root }};
+
+    index index.php index.html index.html;
+
+    location ~ \..*/.*\.php$ {
+        # Filter out arbitrary code execution
+        return 404;
+    }
+}
+        </code></pre>
+    </section>
+
+    <section class="slide">
+        <h2>Example: files</h2>
+        <pre><code>
+$ ls -l roles/nginx/files/
+total 8
+-rw-r--r--  1 n s 864 Jan  9 09:10 fastcgi.conf
+        </code></pre>
+    </section>
+
+    <section class="slide">
+        <h2>Variables</h2>
+        <ul>
+            <li>Global</li>
+            <li>Overrideable</li>
+            <ul>
+                <li>default</li>
+                <li>group_vars</li>
+                <li>host_vars</li>
+                <li>facts</li>
+                <li>play_vars</li>
+                <li>extra_vars</li>
+            </ul>
+            <li>*Not Exhaustive</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Group Variables</h2>
+        <ul>
+            <li>Put what you care about here</li>
+        </ul>
+    </section>
+    
+    <section class="slide">
+        <h2>Using Variables</h2>
+        <pre><code>
+---
+run_upgrades: false
+user: root
+db_host: 159.203.223.73
+backup_dir: /Users/nwertzberger/Repositories/Devops/backups
+ansible_python_interpreter: /usr/bin/python2.7
+backup: false
+restore: false
+        </code></pre>
+    </section>
+
+    <section class="slide">
+        <h2>Using Variables</h2>
+        <pre><code>
+ideaheap_com:
+  wordpress:
+    name: ansible.ideaheap.com
+    user_id: ideaheap_com
+    user_password_hash: "{{ secret_ideaheap_com_user_password_hash }}"
+    wp_db_name: ideaheap_com
+    wp_db_user: ideaheap_com
+    wp_db_password: '{{ secret_ideaheap_com_db_password }}'
+    wp_db_host: '{{ db_host }}'
+    wp_db_port: '{{ mysql_port }}'
+    debug_enable: true
+    auto_up_disable: false
+    core_update_level: true
+  mysql:
+    user: ideaheap_com
+    password: '{{ secret_ideaheap_com_db_password }}'
+    schema: ideaheap_com
+  nginx:
+    name: ansible.ideaheap.com
+    root: /home/ideaheap_com/sites/ansible.ideaheap.com
+    logdir: /home/ideaheap_com/logs
+    server_name: ansible.ideaheap.com
+        </code></pre>
+    </section>
+
+    <section class="slide">
+        <h2>Host Variables</h2>
+        <ul>
+            <li>Put assignments here</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Host Variables</h2>
+        <pre><code>
+---
+nginx_php_sites:
+  - "{{ ideaheap_com.nginx }}"
+
+# Wordpress
+backup_wordpress: "{{backup}}"
+restore_wordpress: "{{restore}}"
+wordpress_sites:
+  - "{{ ideaheap_com.wordpress }}"
+
+# Mysql
+backup_mysql: "{{backup}}"
+restore_mysql: "{{restore}}"
+mysql_port: 3306
+mysql_databases:
+  - "{{ ideaheap_com.mysql }}"
+        </code></pre>
+    </section>
+    
+    <section class="slide">
+        <h2>And so much more!</h2>
+        <ul>
+            <li>Encrypted files</li>
+            <li>Git integration</li>
+            <li>Custom integration with external inventory</li>
+        </ul>
+    </section>
+
+    <section class="slide">
+        <h2>Conclusion!</h2>
+        <ul>
+            <li class="slide">Isn't Perfect</li>
+            <li class="slide">Can be a bit slow</li>
+            <li class="slide">Gets the job done</li>
+            <li class="slide">Easiest tool to learn</li>
+            <li class="slide">Only prereq is SSH Keys</li>
         </ul>
     </section>
 
